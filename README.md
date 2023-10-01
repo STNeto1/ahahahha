@@ -3,6 +3,9 @@
 - Client
   - Solid Start
 - Server
-  - asdasd
-  - aisdjais
-  - asdjaosi
+  - Gateway
+    - Golang + Gql 
+  - Search api
+    - Golang + grpc 
+  - Bidding api
+    - Golang + grpc 
