@@ -1,0 +1,12 @@
+version: v1
+
+managed:
+  enabled: false
+
+plugins:
+  - plugin: buf.build/protocolbuffers/go:v1.31.0
+    out: search/gen
+    opt: paths=source_relative
+  - plugin: buf.build/grpc/go
+    out: search/gen
+    opt: paths=source_relative

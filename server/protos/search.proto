@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package search.v1;
+
+option go_package = "search/gen/protos;searchpb";
+
+message Empty {}
+
+message Category {
+    string id = 1;
+    string name = 2;
+    string slug = 3;
+    optional string parent_id = 4;
+}
+
+message FetchCategoriesResponse {
+    repeated Category categories = 1;
+}
+
+service SearchService {
+    rpc FetchCategories(Empty) returns (FetchCategoriesResponse);
+}
