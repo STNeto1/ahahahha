@@ -16,6 +16,12 @@ input AuthenticatedUserInput {
   password: String!
 }
 
+input UpdateUserInput {
+  name: String
+  email: String
+  password: String
+}
+
 # Queries
 type Query {
   users(term: String): [User!]!
@@ -27,4 +33,5 @@ type Query {
 type Mutation {
   createUser(input: CreateUserInput!): Boolean!
   authenticateUser(input: AuthenticatedUserInput!): String!
+  updateUser(input: UpdateUserInput!): Boolean!
 }

@@ -103,6 +103,76 @@ func AuthenticateUser(db *sqlx.DB, email, password string) (*User, error) {
 	return &user, nil
 }
 
+func UpdateUser(db *sqlx.DB, currentUser *User, name, email, password *string) error {
+	if email == nil {
+		email = &currentUser.Email
+	}
+
+	if name == nil {
+		name = &currentUser.Name
+	}
+
+	tx, err := db.BeginTx(context.Background(), nil)
+	if err != nil {
+		return err
+	}
+
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().From("users")
+
+	_sql, args := sb.Select("*").
+		Where(sb.Equal("email", email)).
+		Where(sb.NotEqual("id", currentUser.ID)).
+		Limit(1).
+		Build()
+
+	res, err := tx.Query(_sql, args...)
+	if err != nil && err != sql.ErrNoRows {
+		rollback(tx)
+
+		return err
+	}
+
+	var existingUser User
+	for res.Next() {
+		err := res.Scan(&existingUser.ID, &existingUser.Name, &existingUser.Email, &existingUser.Password, &existingUser.CreatedAt)
+		if err != nil {
+			rollback(tx)
+		}
+
+		return ErrUserAlreadyExists
+	}
+
+	if password != nil {
+		hashedPwd, err := bcrypt.GenerateFromPassword([]byte(*password), bcrypt.DefaultCost)
+		if err != nil {
+			rollback(tx)
+
+			return err
+		}
+
+		_pwd := string(hashedPwd)
+		password = &_pwd
+	} else {
+		password = &currentUser.Password
+	}
+
+	ub := sqlbuilder.PostgreSQL.NewUpdateBuilder().Update("users")
+	_sql, args = ub.Set(
+		ub.Assign("name", *name),
+		ub.Assign("email", *email),
+		ub.Assign("password", *password),
+	).Where(ub.Equal("id", currentUser.ID)).Build()
+
+	_, err = tx.Exec(_sql, args...)
+	if err != nil {
+		rollback(tx)
+
+		return err
+	}
+
+	return tx.Commit()
+}
+
 func CreateToken(user *User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.ID,

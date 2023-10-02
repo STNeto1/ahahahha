@@ -49,6 +49,26 @@ func (r *mutationResolver) AuthenticateUser(ctx context.Context, input model.Aut
 	return usr.Name, nil
 }
 
+// UpdateUser is the resolver for the updateUser field.
+func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUserInput) (bool, error) {
+	uID, ok := core.GetUserIDFromContext(ctx)
+	if !ok {
+		return false, gqlerror.Errorf("error getting user id")
+	}
+
+	usr, err := core.GetUser(r.DB, uID)
+	if err != nil {
+		return false, gqlerror.Errorf(err.Error())
+	}
+
+	err = core.UpdateUser(r.DB, usr, input.Name, input.Email, input.Password)
+	if err != nil {
+		return false, gqlerror.Errorf(err.Error())
+	}
+
+	return true, nil
+}
+
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context, term *string) ([]*model.User, error) {
 	users, err := core.SearchUsers(r.DB, term)
