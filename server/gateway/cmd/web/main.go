@@ -1,6 +1,7 @@
 package main
 
 import (
+	"gateway/pkg/core"
 	"gateway/pkg/graph"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -12,11 +13,13 @@ import (
 func main() {
 	e := echo.New()
 
-	resolverHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	resolverHandler := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+		DB: core.InitDB(),
+	}}))
 	playgroundHandler := playground.Handler("GraphQL", "/query")
 
 	// Middleware
-	e.Use(middleware.Logger())
+	// e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
 	e.POST("/query", func(c echo.Context) error {

@@ -1,5 +1,5 @@
 type User {
-  id: Int!
+  id: ID!
   name: String!
   email: String!
 }
@@ -11,13 +11,19 @@ input CreateUserInput {
   password: String!
 }
 
+input AuthenticatedUserInput {
+  email: String!
+  password: String!
+}
+
 # Queries
 type Query {
-  users: [User!]!
-  user(id: Int!): User
+  users(term: String): [User!]!
+  user(id: ID!): User
 }
 
 # Mutations
 type Mutation {
-  createUser(input: CreateUserInput!): User!
+  createUser(input: CreateUserInput!): Boolean!
+  authenticateUser(input: AuthenticatedUserInput!): String!
 }

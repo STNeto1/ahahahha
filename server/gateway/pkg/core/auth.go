@@ -3,7 +3,6 @@ package core
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"log"
 
 	"github.com/huandu/go-sqlbuilder"
@@ -12,19 +11,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var (
-	ErrUserAlreadyExists  = errors.New("user already exists")
-	ErrUserDoesNotExists  = errors.New("user does not exists")
-	ErrInvalidCredentials = errors.New("invalid credentials")
-)
-
 func CreateUser(db *sqlx.DB, name, email, password string) error {
 	tx, err := db.BeginTx(context.Background(), nil)
 	if err != nil {
 		return err
 	}
 
-	sb := sqlbuilder.NewSelectBuilder().From("users")
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().
+		From("users")
 	_sql, args := sb.Select("count(*)").
 		Where(sb.Equal("email", email)).
 		Build()
@@ -59,10 +53,11 @@ func CreateUser(db *sqlx.DB, name, email, password string) error {
 		return err
 	}
 
-	_sql, args = sqlbuilder.NewInsertBuilder().
+	_sql, args = sqlbuilder.PostgreSQL.NewInsertBuilder().
 		InsertInto("users").Cols("id", "name", "email", "password").
-		Values(ulid.Make(), name, email, string(hashedPwd)).
+		Values(ulid.Make().String(), name, email, string(hashedPwd)).
 		Build()
+
 	_, err = tx.Exec(_sql, args...)
 	if err != nil {
 		rollback(tx)
@@ -74,7 +69,7 @@ func CreateUser(db *sqlx.DB, name, email, password string) error {
 }
 
 func AuthenticateUser(db *sqlx.DB, email, password string) (*User, error) {
-	sb := sqlbuilder.NewSelectBuilder().From("users")
+	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().From("users")
 	_sql, args := sb.Select("*").
 		Where(sb.Equal("email", email)).
 		Limit(1).
