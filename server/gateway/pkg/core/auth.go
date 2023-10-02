@@ -5,11 +5,14 @@ import (
 	"database/sql"
 	"log"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/jmoiron/sqlx"
 	"github.com/oklog/ulid/v2"
 	"golang.org/x/crypto/bcrypt"
 )
+
+var tokenSecret = []byte("secret")
 
 func CreateUser(db *sqlx.DB, name, email, password string) error {
 	tx, err := db.BeginTx(context.Background(), nil)
@@ -98,6 +101,20 @@ func AuthenticateUser(db *sqlx.DB, email, password string) (*User, error) {
 	}
 
 	return &user, nil
+}
+
+func CreateToken(user *User) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": user.ID,
+	})
+
+	return token.SignedString(tokenSecret)
+}
+
+func DecodeToken(token string) (*jwt.Token, error) {
+	return jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		return tokenSecret, nil
+	})
 }
 
 func rollback(tx *sql.Tx) {

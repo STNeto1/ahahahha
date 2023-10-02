@@ -20,6 +20,7 @@ input AuthenticatedUserInput {
 type Query {
   users(term: String): [User!]!
   user(id: ID!): User
+  me: User!
 }
 
 # Mutations

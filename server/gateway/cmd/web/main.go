@@ -21,6 +21,8 @@ func main() {
 	// Middleware
 	// e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(core.UserMiddleware())
+	e.Use(core.CookieMiddleWare())
 
 	e.POST("/query", func(c echo.Context) error {
 		req := c.Request()

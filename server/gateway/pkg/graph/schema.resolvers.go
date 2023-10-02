@@ -8,6 +8,9 @@ import (
 	"context"
 	"gateway/pkg/core"
 	"gateway/pkg/graph/model"
+	"log"
+	"net/http"
+	"time"
 
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
@@ -29,6 +32,20 @@ func (r *mutationResolver) AuthenticateUser(ctx context.Context, input model.Aut
 		return "", gqlerror.Errorf(err.Error())
 	}
 
+	token, err := core.CreateToken(usr)
+	if err != nil {
+		return "", gqlerror.Errorf(err.Error())
+	}
+
+	cookie := &http.Cookie{Name: "Authorization", Value: token, Path: "/", HttpOnly: true, Expires: time.Now().Add(24 * time.Hour)}
+	writer, ok := ctx.Value(core.HttpWriterKey).(http.ResponseWriter)
+	if !ok {
+		log.Println("error getting http writer", writer, ok)
+		return "", gqlerror.Errorf("error getting http writer")
+	}
+
+	http.SetCookie(writer, cookie)
+
 	return usr.Name, nil
 }
 
@@ -45,6 +62,21 @@ func (r *queryResolver) Users(ctx context.Context, term *string) ([]*model.User,
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
 	usr, err := core.GetUser(r.DB, id)
+	if err != nil {
+		return nil, gqlerror.Errorf(err.Error())
+	}
+
+	return core.MapUser(usr), nil
+}
+
+// Me is the resolver for the me field.
+func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
+	uID, ok := core.GetUserIDFromContext(ctx)
+	if !ok {
+		return nil, gqlerror.Errorf("error getting user id")
+	}
+
+	usr, err := core.GetUser(r.DB, uID)
 	if err != nil {
 		return nil, gqlerror.Errorf(err.Error())
 	}
