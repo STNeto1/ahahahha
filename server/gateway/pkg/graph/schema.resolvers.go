@@ -69,6 +69,35 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUse
 	return true, nil
 }
 
+// DeleteUser is the resolver for the deleteUser field.
+func (r *mutationResolver) DeleteUser(ctx context.Context) (bool, error) {
+	uID, ok := core.GetUserIDFromContext(ctx)
+	if !ok {
+		return false, gqlerror.Errorf("error getting user id")
+	}
+
+	usr, err := core.GetUser(r.DB, uID)
+	if err != nil {
+		return false, gqlerror.Errorf(err.Error())
+	}
+
+	err = core.DeleteUser(r.DB, usr)
+	if err != nil {
+		return false, gqlerror.Errorf(err.Error())
+	}
+
+	cookie := &http.Cookie{Name: "Authorization", Value: "", Path: "/", HttpOnly: true, Expires: time.Now().Add(-time.Hour)}
+	writer, ok := ctx.Value(core.HttpWriterKey).(http.ResponseWriter)
+	if !ok {
+		log.Println("error getting http writer", writer, ok)
+		return false, gqlerror.Errorf("error getting http writer")
+	}
+
+	http.SetCookie(writer, cookie)
+
+	return true, nil
+}
+
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context, term *string) ([]*model.User, error) {
 	users, err := core.SearchUsers(r.DB, term)

@@ -173,6 +173,20 @@ func UpdateUser(db *sqlx.DB, currentUser *User, name, email, password *string) e
 	return tx.Commit()
 }
 
+func DeleteUser(db *sqlx.DB, user *User) error {
+	dbb := sqlbuilder.PostgreSQL.NewDeleteBuilder().DeleteFrom("users")
+	_sql, args := dbb.
+		Where(dbb.Equal("id", user.ID)).
+		Build()
+
+	_, err := db.Exec(_sql, args...)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func CreateToken(user *User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.ID,

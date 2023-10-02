@@ -115,3 +115,23 @@ func TestUpdateWithAlreadyExistingMail(t *testing.T) {
 	err = core.UpdateUser(db, user, &newName, &newMail, &newPassword)
 	assert.Error(t, err, core.ErrUserAlreadyExists)
 }
+
+func TestDeleteUser(t *testing.T) {
+	db := core.InitTempDB()
+	defer db.Close()
+
+	err := core.CreateUser(db, "foo", "mail@mail.com", "102030")
+	assert.NoError(t, err)
+
+	user, err := core.AuthenticateUser(db, "mail@mail.com", "102030")
+	assert.NotNil(t, user)
+	assert.NoError(t, err)
+
+	err = core.DeleteUser(db, user)
+	assert.NoError(t, err)
+
+	user, err = core.AuthenticateUser(db, "mail@mail.com", "102030")
+	assert.Nil(t, user)
+	assert.Error(t, err, core.ErrUserDoesNotExists)
+
+}

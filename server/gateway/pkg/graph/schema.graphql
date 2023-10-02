@@ -34,4 +34,5 @@ type Mutation {
   createUser(input: CreateUserInput!): Boolean!
   authenticateUser(input: AuthenticatedUserInput!): String!
   updateUser(input: UpdateUserInput!): Boolean!
+  deleteUser: Boolean!
 }
