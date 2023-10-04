@@ -7,10 +7,30 @@ type AuthenticatedUserInput struct {
 	Password string `json:"password"`
 }
 
+type Category struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Slug      string `json:"slug"`
+	CreatedAt string `json:"createdAt"`
+}
+
+type CreateCategoryInput struct {
+	Name   string  `json:"name"`
+	Slug   string  `json:"slug"`
+	Parent *string `json:"parent,omitempty"`
+}
+
 type CreateUserInput struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type UpdateCategoryInput struct {
+	ID     string  `json:"id"`
+	Name   string  `json:"name"`
+	Slug   string  `json:"slug"`
+	Parent *string `json:"parent,omitempty"`
 }
 
 type UpdateUserInput struct {

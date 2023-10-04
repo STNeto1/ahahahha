@@ -10,6 +10,7 @@ import (
 	"gateway/pkg/graph/model"
 	"log"
 	"net/http"
+	searchpb "search/gen/protos"
 	"time"
 
 	"github.com/vektah/gqlparser/v2/gqlerror"
@@ -98,6 +99,49 @@ func (r *mutationResolver) DeleteUser(ctx context.Context) (bool, error) {
 	return true, nil
 }
 
+// CreateCategory is the resolver for the createCategory field.
+func (r *mutationResolver) CreateCategory(ctx context.Context, input model.CreateCategoryInput) (bool, error) {
+	_, err := r.SearchClient.CreateCategory(ctx, &searchpb.CreateCategoryRequest{
+		Name:     input.Name,
+		Slug:     input.Slug,
+		ParentId: input.Parent,
+	})
+
+	if err != nil {
+		return false, gqlerror.Errorf(err.Error())
+	}
+
+	return true, nil
+}
+
+// UpdateCategory is the resolver for the updateCategory field.
+func (r *mutationResolver) UpdateCategory(ctx context.Context, input model.UpdateCategoryInput) (bool, error) {
+	_, err := r.SearchClient.UpdateCategory(ctx, &searchpb.UpdateCategoryRequest{
+		Name:     input.Name,
+		Slug:     input.Slug,
+		ParentId: input.Parent,
+	})
+
+	if err != nil {
+		return false, gqlerror.Errorf(err.Error())
+	}
+
+	return true, nil
+}
+
+// DeleteCategory is the resolver for the deleteCategory field.
+func (r *mutationResolver) DeleteCategory(ctx context.Context, id string) (bool, error) {
+	_, err := r.SearchClient.DeleteCategory(ctx, &searchpb.DeleteCategoryRequest{
+		Id: id,
+	})
+
+	if err != nil {
+		return false, gqlerror.Errorf(err.Error())
+	}
+
+	return true, nil
+}
+
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context, term *string) ([]*model.User, error) {
 	users, err := core.SearchUsers(r.DB, term)
@@ -131,6 +175,42 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	}
 
 	return core.MapUser(usr), nil
+}
+
+// Categories is the resolver for the categories field.
+func (r *queryResolver) Categories(ctx context.Context) ([]*model.Category, error) {
+	categories, err := r.SearchClient.FetchCategories(ctx, &searchpb.Empty{})
+	if err != nil {
+		return nil, gqlerror.Errorf(err.Error())
+	}
+
+	result := make([]*model.Category, len(categories.Categories))
+	for i, category := range categories.Categories {
+		result[i] = &model.Category{
+			ID:   category.Id,
+			Name: category.Name,
+			Slug: category.Slug,
+			// ParentID: category.ParentId,
+		}
+	}
+
+	return result, nil
+}
+
+// Category is the resolver for the category field.
+func (r *queryResolver) Category(ctx context.Context, id string) (*model.Category, error) {
+	cat, err := r.SearchClient.GetCategory(ctx, &searchpb.GetCategoryRequest{Id: id})
+
+	if err != nil {
+		return nil, gqlerror.Errorf(err.Error())
+	}
+
+	return &model.Category{
+		ID:   cat.Id,
+		Name: cat.Name,
+		Slug: cat.Slug,
+		// ParentID: cat.ParentId,
+	}, nil
 }
 
 // Mutation returns MutationResolver implementation.

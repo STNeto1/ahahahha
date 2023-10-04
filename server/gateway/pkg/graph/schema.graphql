@@ -4,6 +4,13 @@ type User {
   email: String!
 }
 
+type Category {
+  id: ID!
+  name: String!
+  slug: String!
+  createdAt: String!
+}
+
 # Inputs
 input CreateUserInput {
   name: String!
@@ -22,11 +29,27 @@ input UpdateUserInput {
   password: String
 }
 
+input CreateCategoryInput {
+  name: String!
+  slug: String!
+  parent: String
+}
+
+input UpdateCategoryInput {
+  id: ID!
+  name: String!
+  slug: String!
+  parent: String
+}
+
 # Queries
 type Query {
   users(term: String): [User!]!
   user(id: ID!): User
   me: User!
+
+  categories: [Category!]!
+  category(id: ID!): Category
 }
 
 # Mutations
@@ -35,4 +58,8 @@ type Mutation {
   authenticateUser(input: AuthenticatedUserInput!): String!
   updateUser(input: UpdateUserInput!): Boolean!
   deleteUser: Boolean!
+
+  createCategory(input: CreateCategoryInput!): Boolean!
+  updateCategory(input: UpdateCategoryInput!): Boolean!
+  deleteCategory(id: ID!): Boolean!
 }

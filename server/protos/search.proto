@@ -4,7 +4,6 @@ package search.v1;
 
 option go_package = "search/gen/protos;searchpb";
 
-message Empty {}
 
 message Category {
     string id = 1;
@@ -13,10 +12,37 @@ message Category {
     optional string parent_id = 4;
 }
 
+service SearchService {
+    rpc FetchCategories(Empty) returns (FetchCategoriesResponse);
+    rpc GetCategory(GetCategoryRequest) returns (Category);
+    rpc CreateCategory(CreateCategoryRequest) returns (Empty);
+    rpc UpdateCategory(UpdateCategoryRequest) returns (Empty);
+    rpc DeleteCategory(DeleteCategoryRequest) returns (Empty);
+}
+
+message Empty {}
+
 message FetchCategoriesResponse {
     repeated Category categories = 1;
 }
 
-service SearchService {
-    rpc FetchCategories(Empty) returns (FetchCategoriesResponse);
+message GetCategoryRequest {
+    string id = 1;
+}
+
+message CreateCategoryRequest {
+    string name = 1;
+    string slug = 2;
+    optional string parent_id = 3;
+}
+
+message UpdateCategoryRequest {
+    string id = 1;
+    string name = 2;
+    string slug = 3;
+    optional string parent_id = 4;
+}
+
+message DeleteCategoryRequest {
+    string id = 1;
 }

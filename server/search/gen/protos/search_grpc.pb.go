@@ -20,6 +20,10 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	SearchService_FetchCategories_FullMethodName = "/search.v1.SearchService/FetchCategories"
+	SearchService_GetCategory_FullMethodName     = "/search.v1.SearchService/GetCategory"
+	SearchService_CreateCategory_FullMethodName  = "/search.v1.SearchService/CreateCategory"
+	SearchService_UpdateCategory_FullMethodName  = "/search.v1.SearchService/UpdateCategory"
+	SearchService_DeleteCategory_FullMethodName  = "/search.v1.SearchService/DeleteCategory"
 )
 
 // SearchServiceClient is the client API for SearchService service.
@@ -27,6 +31,10 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SearchServiceClient interface {
 	FetchCategories(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*FetchCategoriesResponse, error)
+	GetCategory(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*Category, error)
+	CreateCategory(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*Empty, error)
+	UpdateCategory(ctx context.Context, in *UpdateCategoryRequest, opts ...grpc.CallOption) (*Empty, error)
+	DeleteCategory(ctx context.Context, in *DeleteCategoryRequest, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type searchServiceClient struct {
@@ -46,11 +54,51 @@ func (c *searchServiceClient) FetchCategories(ctx context.Context, in *Empty, op
 	return out, nil
 }
 
+func (c *searchServiceClient) GetCategory(ctx context.Context, in *GetCategoryRequest, opts ...grpc.CallOption) (*Category, error) {
+	out := new(Category)
+	err := c.cc.Invoke(ctx, SearchService_GetCategory_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *searchServiceClient) CreateCategory(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, SearchService_CreateCategory_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *searchServiceClient) UpdateCategory(ctx context.Context, in *UpdateCategoryRequest, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, SearchService_UpdateCategory_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *searchServiceClient) DeleteCategory(ctx context.Context, in *DeleteCategoryRequest, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, SearchService_DeleteCategory_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SearchServiceServer is the server API for SearchService service.
 // All implementations must embed UnimplementedSearchServiceServer
 // for forward compatibility
 type SearchServiceServer interface {
 	FetchCategories(context.Context, *Empty) (*FetchCategoriesResponse, error)
+	GetCategory(context.Context, *GetCategoryRequest) (*Category, error)
+	CreateCategory(context.Context, *CreateCategoryRequest) (*Empty, error)
+	UpdateCategory(context.Context, *UpdateCategoryRequest) (*Empty, error)
+	DeleteCategory(context.Context, *DeleteCategoryRequest) (*Empty, error)
 	mustEmbedUnimplementedSearchServiceServer()
 }
 
@@ -60,6 +108,18 @@ type UnimplementedSearchServiceServer struct {
 
 func (UnimplementedSearchServiceServer) FetchCategories(context.Context, *Empty) (*FetchCategoriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchCategories not implemented")
+}
+func (UnimplementedSearchServiceServer) GetCategory(context.Context, *GetCategoryRequest) (*Category, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCategory not implemented")
+}
+func (UnimplementedSearchServiceServer) CreateCategory(context.Context, *CreateCategoryRequest) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCategory not implemented")
+}
+func (UnimplementedSearchServiceServer) UpdateCategory(context.Context, *UpdateCategoryRequest) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCategory not implemented")
+}
+func (UnimplementedSearchServiceServer) DeleteCategory(context.Context, *DeleteCategoryRequest) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCategory not implemented")
 }
 func (UnimplementedSearchServiceServer) mustEmbedUnimplementedSearchServiceServer() {}
 
@@ -92,6 +152,78 @@ func _SearchService_FetchCategories_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SearchService_GetCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCategoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SearchServiceServer).GetCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SearchService_GetCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SearchServiceServer).GetCategory(ctx, req.(*GetCategoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SearchService_CreateCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCategoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SearchServiceServer).CreateCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SearchService_CreateCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SearchServiceServer).CreateCategory(ctx, req.(*CreateCategoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SearchService_UpdateCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCategoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SearchServiceServer).UpdateCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SearchService_UpdateCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SearchServiceServer).UpdateCategory(ctx, req.(*UpdateCategoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SearchService_DeleteCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteCategoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SearchServiceServer).DeleteCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SearchService_DeleteCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SearchServiceServer).DeleteCategory(ctx, req.(*DeleteCategoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SearchService_ServiceDesc is the grpc.ServiceDesc for SearchService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +234,22 @@ var SearchService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FetchCategories",
 			Handler:    _SearchService_FetchCategories_Handler,
+		},
+		{
+			MethodName: "GetCategory",
+			Handler:    _SearchService_GetCategory_Handler,
+		},
+		{
+			MethodName: "CreateCategory",
+			Handler:    _SearchService_CreateCategory_Handler,
+		},
+		{
+			MethodName: "UpdateCategory",
+			Handler:    _SearchService_UpdateCategory_Handler,
+		},
+		{
+			MethodName: "DeleteCategory",
+			Handler:    _SearchService_DeleteCategory_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
