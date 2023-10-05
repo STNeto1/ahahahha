@@ -4,45 +4,67 @@ package search.v1;
 
 option go_package = "search/gen/protos;searchpb";
 
-
 message Category {
-    string id = 1;
-    string name = 2;
-    string slug = 3;
-    optional string parent_id = 4;
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+  optional string parent_id = 4;
+}
+
+enum Rarity {
+  RARITY_COMMON = 0;
+  RARITY_UNCOMMON = 1;
+  RARITY_RARE = 2;
+  RARITY_EPIC = 3;
+  RARITY_LEGENDARY = 4;
+}
+
+message Item {
+  string id = 1;
+  string name = 2;
+  Rarity rarity = 3; // check
+  optional string description = 4;
+  optional string image = 5;
+  uint32 level = 6;
+  uint32 time_left = 7;
+  string seller_id = 8;
+  float price = 9;
+  optional float buyout_price = 10;
+  uint32 quantity = 11;
+  Category category = 12;
 }
 
 service SearchService {
-    rpc FetchCategories(Empty) returns (FetchCategoriesResponse);
-    rpc GetCategory(GetCategoryRequest) returns (Category);
-    rpc CreateCategory(CreateCategoryRequest) returns (Empty);
-    rpc UpdateCategory(UpdateCategoryRequest) returns (Empty);
-    rpc DeleteCategory(DeleteCategoryRequest) returns (Empty);
+  rpc FetchCategories(Empty) returns (FetchCategoriesResponse);
+  rpc GetCategory(GetCategoryRequest) returns (Category);
+  rpc CreateCategory(CreateCategoryRequest) returns (Empty);
+  rpc UpdateCategory(UpdateCategoryRequest) returns (Empty);
+  rpc DeleteCategory(DeleteCategoryRequest) returns (Empty);
 }
 
 message Empty {}
 
 message FetchCategoriesResponse {
-    repeated Category categories = 1;
+  repeated Category categories = 1;
 }
 
 message GetCategoryRequest {
-    string id = 1;
+  string id = 1;
 }
 
 message CreateCategoryRequest {
-    string name = 1;
-    string slug = 2;
-    optional string parent_id = 3;
+  string name = 1;
+  string slug = 2;
+  optional string parent_id = 3;
 }
 
 message UpdateCategoryRequest {
-    string id = 1;
-    string name = 2;
-    string slug = 3;
-    optional string parent_id = 4;
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+  optional string parent_id = 4;
 }
 
 message DeleteCategoryRequest {
-    string id = 1;
+  string id = 1;
 }
