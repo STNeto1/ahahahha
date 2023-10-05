@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 )
 
@@ -14,7 +15,7 @@ type contextKey struct {
 	name string
 }
 
-func UserMiddleware() echo.MiddlewareFunc {
+func UserMiddleware(db *sqlx.DB) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			cookie, err := c.Cookie("Authorization")
@@ -28,7 +29,17 @@ func UserMiddleware() echo.MiddlewareFunc {
 			}
 
 			if claims, ok := tokenData.Claims.(jwt.MapClaims); ok && tokenData.Valid {
-				ctx := context.WithValue(c.Request().Context(), UserCtxKey, claims["sub"])
+				sub, ok := claims["sub"].(string)
+				if !ok {
+					return next(c)
+				}
+
+				usr, err := GetUser(db, sub)
+				if err != nil {
+					return next(c)
+				}
+
+				ctx := context.WithValue(c.Request().Context(), UserCtxKey, usr)
 				c.SetRequest(c.Request().WithContext(ctx))
 			}
 
@@ -49,8 +60,12 @@ func CookieMiddleWare() echo.MiddlewareFunc {
 	}
 }
 
-func GetUserIDFromContext(ctx context.Context) (string, bool) {
-	uID, ok := ctx.Value(UserCtxKey).(string)
+func GetUserFromContext(ctx context.Context) *User {
+	usr, ok := ctx.Value(UserCtxKey).(*User)
 
-	return uID, ok
+	if !ok {
+		return nil
+	}
+
+	return usr
 }

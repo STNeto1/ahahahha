@@ -1,3 +1,6 @@
+directive @auth on FIELD_DEFINITION
+directive @staff on FIELD_DEFINITION
+
 type User {
   id: ID!
   name: String!
@@ -44,12 +47,12 @@ input UpdateCategoryInput {
 
 # Queries
 type Query {
-  users(term: String): [User!]!
-  user(id: ID!): User
-  me: User!
+  users(term: String): [User!]! @staff
+  user(id: ID!): User @staff
+  me: User! @auth
 
-  categories: [Category!]!
-  category(id: ID!): Category
+  categories: [Category!]! @auth
+  category(id: ID!): Category @auth
 }
 
 # Mutations
@@ -59,7 +62,7 @@ type Mutation {
   updateUser(input: UpdateUserInput!): Boolean!
   deleteUser: Boolean!
 
-  createCategory(input: CreateCategoryInput!): Boolean!
-  updateCategory(input: UpdateCategoryInput!): Boolean!
-  deleteCategory(id: ID!): Boolean!
+  createCategory(input: CreateCategoryInput!): Boolean! @staff
+  updateCategory(input: UpdateCategoryInput!): Boolean! @staff
+  deleteCategory(id: ID!): Boolean! @staff
 }

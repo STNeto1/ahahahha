@@ -51,6 +51,7 @@ func getSchemas() []string {
 		Define("name", "varchar(255)", "NOT NULL").
 		Define("email", "varchar(255)", "NOT NULL UNIQUE").
 		Define("password", "varchar(255)", "NOT NULL").
+		Define("role", "varchar(255)", "NOT NULL", "DEFAULT 'user'").
 		Define("created_at", "timestamp", "NOT NULL DEFAULT CURRENT_TIMESTAMP").
 		Build()
 

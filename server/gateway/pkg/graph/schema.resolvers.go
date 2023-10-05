@@ -52,18 +52,12 @@ func (r *mutationResolver) AuthenticateUser(ctx context.Context, input model.Aut
 
 // UpdateUser is the resolver for the updateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUserInput) (bool, error) {
-	uID, ok := core.GetUserIDFromContext(ctx)
-	if !ok {
+	usr := core.GetUserFromContext(ctx)
+	if usr == nil {
 		return false, gqlerror.Errorf("error getting user id")
 	}
 
-	usr, err := core.GetUser(r.DB, uID)
-	if err != nil {
-		return false, gqlerror.Errorf(err.Error())
-	}
-
-	err = core.UpdateUser(r.DB, usr, input.Name, input.Email, input.Password)
-	if err != nil {
+	if err := core.UpdateUser(r.DB, usr, input.Name, input.Email, input.Password); err != nil {
 		return false, gqlerror.Errorf(err.Error())
 	}
 
@@ -72,18 +66,12 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUse
 
 // DeleteUser is the resolver for the deleteUser field.
 func (r *mutationResolver) DeleteUser(ctx context.Context) (bool, error) {
-	uID, ok := core.GetUserIDFromContext(ctx)
-	if !ok {
+	usr := core.GetUserFromContext(ctx)
+	if usr == nil {
 		return false, gqlerror.Errorf("error getting user id")
 	}
 
-	usr, err := core.GetUser(r.DB, uID)
-	if err != nil {
-		return false, gqlerror.Errorf(err.Error())
-	}
-
-	err = core.DeleteUser(r.DB, usr)
-	if err != nil {
+	if err := core.DeleteUser(r.DB, usr); err != nil {
 		return false, gqlerror.Errorf(err.Error())
 	}
 
@@ -164,14 +152,9 @@ func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error
 
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	uID, ok := core.GetUserIDFromContext(ctx)
-	if !ok {
+	usr := core.GetUserFromContext(ctx)
+	if usr == nil {
 		return nil, gqlerror.Errorf("error getting user id")
-	}
-
-	usr, err := core.GetUser(r.DB, uID)
-	if err != nil {
-		return nil, gqlerror.Errorf(err.Error())
 	}
 
 	return core.MapUser(usr), nil
