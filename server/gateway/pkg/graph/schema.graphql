@@ -14,6 +14,21 @@ type Category {
   createdAt: String!
 }
 
+type Item {
+  id: ID!
+  name: String!
+  rarity: Int!
+  description: String
+  image: String
+  level: Int!
+  time_left: Int!
+  price: Float!
+  buyout_price: Float
+  quantity: Int!
+  # seller: User!
+  # category: Category!
+}
+
 # Inputs
 input CreateUserInput {
   name: String!
@@ -45,6 +60,37 @@ input UpdateCategoryInput {
   parent: String
 }
 
+input CreateItemInput {
+  name: String!
+  rarity: Int!
+  description: String
+  image: String
+  level: Int!
+  time_left: Int!
+  price: Float!
+  buyout_price: Float
+  quantity: Int!
+
+  seller_id: ID!
+  category_id: ID!
+}
+
+input UpdateItemInput {
+  id: ID!
+  name: String!
+  rarity: Int!
+  description: String
+  image: String
+  level: Int!
+  time_left: Int!
+  price: Float!
+  buyout_price: Float
+  quantity: Int!
+
+  seller_id: ID!
+  category_id: ID!
+}
+
 # Queries
 type Query {
   users(term: String): [User!]! @staff
@@ -53,6 +99,9 @@ type Query {
 
   categories: [Category!]! @auth
   category(id: ID!): Category @auth
+
+  items: [Item!]! @auth
+  item(id: ID!): Item! @auth
 }
 
 # Mutations
@@ -65,4 +114,8 @@ type Mutation {
   createCategory(input: CreateCategoryInput!): Boolean! @staff
   updateCategory(input: UpdateCategoryInput!): Boolean! @staff
   deleteCategory(id: ID!): Boolean! @staff
+
+  createItem(input: CreateItemInput!): Boolean! @auth
+  updateItem(input: UpdateItemInput!): Boolean! @auth
+  deleteItem(id: ID!): Boolean! @auth
 }

@@ -31,7 +31,7 @@ message Item {
   float price = 9;
   optional float buyout_price = 10;
   uint32 quantity = 11;
-  Category category = 12;
+  string category_id = 12;
 }
 
 service SearchService {
@@ -40,9 +40,16 @@ service SearchService {
   rpc CreateCategory(CreateCategoryRequest) returns (Empty);
   rpc UpdateCategory(UpdateCategoryRequest) returns (Empty);
   rpc DeleteCategory(DeleteCategoryRequest) returns (Empty);
+
+  rpc GetItem(GetItemRequest) returns (Item);
+  rpc CreateItem(CreateItemRequest) returns (Empty);
+  rpc UpdateItem(UpdateItemRequest) returns (Empty);
+  rpc DeleteItem(DeleteItemRequest) returns (Empty);
 }
 
 message Empty {}
+
+// Category related
 
 message FetchCategoriesResponse {
   repeated Category categories = 1;
@@ -66,5 +73,44 @@ message UpdateCategoryRequest {
 }
 
 message DeleteCategoryRequest {
+  string id = 1;
+}
+
+// Item related
+
+message GetItemRequest {
+  string id = 1;
+}
+
+message CreateItemRequest {
+  string name = 1;
+  Rarity rarity = 2;
+  optional string description = 3;
+  optional string image = 4;
+  uint32 level = 5;
+  uint32 time_left = 6;
+  string seller_id = 7;
+  float price = 8;
+  optional float buyout_price = 9;
+  uint32 quantity = 10;
+  string category_id = 11;
+}
+
+message UpdateItemRequest {
+  string id = 1;
+  string name = 2;
+  Rarity rarity = 3;
+  optional string description = 4;
+  optional string image = 5;
+  uint32 level = 6;
+  uint32 time_left = 7;
+  string seller_id = 8;
+  float price = 9;
+  optional float buyout_price = 10;
+  uint32 quantity = 11;
+  string category_id = 12;
+}
+
+message DeleteItemRequest {
   string id = 1;
 }

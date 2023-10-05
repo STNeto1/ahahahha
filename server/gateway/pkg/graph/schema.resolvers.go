@@ -130,6 +130,21 @@ func (r *mutationResolver) DeleteCategory(ctx context.Context, id string) (bool,
 	return true, nil
 }
 
+// CreateItem is the resolver for the createItem field.
+func (r *mutationResolver) CreateItem(ctx context.Context, input model.CreateItemInput) (bool, error) {
+	return false, nil
+}
+
+// UpdateItem is the resolver for the updateItem field.
+func (r *mutationResolver) UpdateItem(ctx context.Context, input model.UpdateItemInput) (bool, error) {
+	return false, nil
+}
+
+// DeleteItem is the resolver for the deleteItem field.
+func (r *mutationResolver) DeleteItem(ctx context.Context, id string) (bool, error) {
+	return false, nil
+}
+
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context, term *string) ([]*model.User, error) {
 	users, err := core.SearchUsers(r.DB, term)
@@ -193,6 +208,33 @@ func (r *queryResolver) Category(ctx context.Context, id string) (*model.Categor
 		Name: cat.Name,
 		Slug: cat.Slug,
 		// ParentID: cat.ParentId,
+	}, nil
+}
+
+// Items is the resolver for the items field.
+func (r *queryResolver) Items(ctx context.Context) ([]*model.Item, error) {
+	return []*model.Item{}, nil
+}
+
+// Item is the resolver for the item field.
+func (r *queryResolver) Item(ctx context.Context, id string) (*model.Item, error) {
+	item, err := r.SearchClient.GetItem(ctx, &searchpb.GetItemRequest{Id: id})
+
+	if err != nil {
+		return nil, gqlerror.Errorf(err.Error())
+	}
+
+	return &model.Item{
+		ID:          item.GetId(),
+		Name:        item.GetName(),
+		Rarity:      item.GetRarity().Descriptor().Index(),
+		Description: item.Description,
+		Image:       item.Image,
+		Level:       int(item.GetLevel()),
+		TimeLeft:    int(item.GetTimeLeft()),
+		Price:       float64(item.GetPrice()),
+		BuyoutPrice: nil,
+		Quantity:    10,
 	}, nil
 }
 

@@ -24,6 +24,10 @@ const (
 	SearchService_CreateCategory_FullMethodName  = "/search.v1.SearchService/CreateCategory"
 	SearchService_UpdateCategory_FullMethodName  = "/search.v1.SearchService/UpdateCategory"
 	SearchService_DeleteCategory_FullMethodName  = "/search.v1.SearchService/DeleteCategory"
+	SearchService_GetItem_FullMethodName         = "/search.v1.SearchService/GetItem"
+	SearchService_CreateItem_FullMethodName      = "/search.v1.SearchService/CreateItem"
+	SearchService_UpdateItem_FullMethodName      = "/search.v1.SearchService/UpdateItem"
+	SearchService_DeleteItem_FullMethodName      = "/search.v1.SearchService/DeleteItem"
 )
 
 // SearchServiceClient is the client API for SearchService service.
@@ -35,6 +39,10 @@ type SearchServiceClient interface {
 	CreateCategory(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*Empty, error)
 	UpdateCategory(ctx context.Context, in *UpdateCategoryRequest, opts ...grpc.CallOption) (*Empty, error)
 	DeleteCategory(ctx context.Context, in *DeleteCategoryRequest, opts ...grpc.CallOption) (*Empty, error)
+	GetItem(ctx context.Context, in *GetItemRequest, opts ...grpc.CallOption) (*Item, error)
+	CreateItem(ctx context.Context, in *CreateItemRequest, opts ...grpc.CallOption) (*Empty, error)
+	UpdateItem(ctx context.Context, in *UpdateItemRequest, opts ...grpc.CallOption) (*Empty, error)
+	DeleteItem(ctx context.Context, in *DeleteItemRequest, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type searchServiceClient struct {
@@ -90,6 +98,42 @@ func (c *searchServiceClient) DeleteCategory(ctx context.Context, in *DeleteCate
 	return out, nil
 }
 
+func (c *searchServiceClient) GetItem(ctx context.Context, in *GetItemRequest, opts ...grpc.CallOption) (*Item, error) {
+	out := new(Item)
+	err := c.cc.Invoke(ctx, SearchService_GetItem_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *searchServiceClient) CreateItem(ctx context.Context, in *CreateItemRequest, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, SearchService_CreateItem_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *searchServiceClient) UpdateItem(ctx context.Context, in *UpdateItemRequest, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, SearchService_UpdateItem_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *searchServiceClient) DeleteItem(ctx context.Context, in *DeleteItemRequest, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, SearchService_DeleteItem_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SearchServiceServer is the server API for SearchService service.
 // All implementations must embed UnimplementedSearchServiceServer
 // for forward compatibility
@@ -99,6 +143,10 @@ type SearchServiceServer interface {
 	CreateCategory(context.Context, *CreateCategoryRequest) (*Empty, error)
 	UpdateCategory(context.Context, *UpdateCategoryRequest) (*Empty, error)
 	DeleteCategory(context.Context, *DeleteCategoryRequest) (*Empty, error)
+	GetItem(context.Context, *GetItemRequest) (*Item, error)
+	CreateItem(context.Context, *CreateItemRequest) (*Empty, error)
+	UpdateItem(context.Context, *UpdateItemRequest) (*Empty, error)
+	DeleteItem(context.Context, *DeleteItemRequest) (*Empty, error)
 	mustEmbedUnimplementedSearchServiceServer()
 }
 
@@ -120,6 +168,18 @@ func (UnimplementedSearchServiceServer) UpdateCategory(context.Context, *UpdateC
 }
 func (UnimplementedSearchServiceServer) DeleteCategory(context.Context, *DeleteCategoryRequest) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCategory not implemented")
+}
+func (UnimplementedSearchServiceServer) GetItem(context.Context, *GetItemRequest) (*Item, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetItem not implemented")
+}
+func (UnimplementedSearchServiceServer) CreateItem(context.Context, *CreateItemRequest) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateItem not implemented")
+}
+func (UnimplementedSearchServiceServer) UpdateItem(context.Context, *UpdateItemRequest) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateItem not implemented")
+}
+func (UnimplementedSearchServiceServer) DeleteItem(context.Context, *DeleteItemRequest) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteItem not implemented")
 }
 func (UnimplementedSearchServiceServer) mustEmbedUnimplementedSearchServiceServer() {}
 
@@ -224,6 +284,78 @@ func _SearchService_DeleteCategory_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SearchService_GetItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetItemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SearchServiceServer).GetItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SearchService_GetItem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SearchServiceServer).GetItem(ctx, req.(*GetItemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SearchService_CreateItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateItemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SearchServiceServer).CreateItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SearchService_CreateItem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SearchServiceServer).CreateItem(ctx, req.(*CreateItemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SearchService_UpdateItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateItemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SearchServiceServer).UpdateItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SearchService_UpdateItem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SearchServiceServer).UpdateItem(ctx, req.(*UpdateItemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SearchService_DeleteItem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteItemRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SearchServiceServer).DeleteItem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SearchService_DeleteItem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SearchServiceServer).DeleteItem(ctx, req.(*DeleteItemRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SearchService_ServiceDesc is the grpc.ServiceDesc for SearchService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +382,22 @@ var SearchService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteCategory",
 			Handler:    _SearchService_DeleteCategory_Handler,
+		},
+		{
+			MethodName: "GetItem",
+			Handler:    _SearchService_GetItem_Handler,
+		},
+		{
+			MethodName: "CreateItem",
+			Handler:    _SearchService_CreateItem_Handler,
+		},
+		{
+			MethodName: "UpdateItem",
+			Handler:    _SearchService_UpdateItem_Handler,
+		},
+		{
+			MethodName: "DeleteItem",
+			Handler:    _SearchService_DeleteItem_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -19,6 +19,35 @@ type SearchService struct {
 	db *sqlx.DB
 }
 
+func (*SearchService) CreateItem(_ context.Context, req *searchpb.CreateItemRequest) (*searchpb.Empty, error) {
+	return &searchpb.Empty{}, nil
+}
+
+func (*SearchService) DeleteItem(_ context.Context, req *searchpb.DeleteItemRequest) (*searchpb.Empty, error) {
+	return &searchpb.Empty{}, nil
+}
+
+func (*SearchService) GetItem(_ context.Context, req *searchpb.GetItemRequest) (*searchpb.Item, error) {
+	return &searchpb.Item{
+		Id:          "some",
+		Name:        "Item X",
+		Rarity:      searchpb.Rarity_RARITY_EPIC,
+		Description: getPtr("Some description"),
+		Image:       getPtr("https://via.placeholder.com/150"),
+		Level:       uint32(60),
+		TimeLeft:    10,
+		SellerId:    "some",
+		Price:       10,
+		BuyoutPrice: getPtr(float32(100)),
+		Quantity:    10,
+		CategoryId:  "some",
+	}, nil
+}
+
+func (*SearchService) UpdateItem(_ context.Context, req *searchpb.UpdateItemRequest) (*searchpb.Empty, error) {
+	return &searchpb.Empty{}, nil
+}
+
 func (ss *SearchService) FetchCategories(_ context.Context, _ *searchpb.Empty) (*searchpb.FetchCategoriesResponse, error) {
 	categories, err := FetchCategories(ss.db)
 	if err != nil {
@@ -68,4 +97,8 @@ func (ss *SearchService) GetCategory(_ context.Context, req *searchpb.GetCategor
 func (ss *SearchService) UpdateCategory(_ context.Context, req *searchpb.UpdateCategoryRequest) (*searchpb.Empty, error) {
 	err := UpdateCategory(ss.db, req)
 	return &searchpb.Empty{}, err
+}
+
+func getPtr[T any](s T) *T {
+	return &s
 }

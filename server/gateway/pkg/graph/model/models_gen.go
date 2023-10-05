@@ -20,10 +20,37 @@ type CreateCategoryInput struct {
 	Parent *string `json:"parent,omitempty"`
 }
 
+type CreateItemInput struct {
+	Name        string   `json:"name"`
+	Rarity      int      `json:"rarity"`
+	Description *string  `json:"description,omitempty"`
+	Image       *string  `json:"image,omitempty"`
+	Level       int      `json:"level"`
+	TimeLeft    int      `json:"time_left"`
+	Price       float64  `json:"price"`
+	BuyoutPrice *float64 `json:"buyout_price,omitempty"`
+	Quantity    int      `json:"quantity"`
+	SellerID    string   `json:"seller_id"`
+	CategoryID  string   `json:"category_id"`
+}
+
 type CreateUserInput struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type Item struct {
+	ID          string   `json:"id"`
+	Name        string   `json:"name"`
+	Rarity      int      `json:"rarity"`
+	Description *string  `json:"description,omitempty"`
+	Image       *string  `json:"image,omitempty"`
+	Level       int      `json:"level"`
+	TimeLeft    int      `json:"time_left"`
+	Price       float64  `json:"price"`
+	BuyoutPrice *float64 `json:"buyout_price,omitempty"`
+	Quantity    int      `json:"quantity"`
 }
 
 type UpdateCategoryInput struct {
@@ -31,6 +58,21 @@ type UpdateCategoryInput struct {
 	Name   string  `json:"name"`
 	Slug   string  `json:"slug"`
 	Parent *string `json:"parent,omitempty"`
+}
+
+type UpdateItemInput struct {
+	ID          string   `json:"id"`
+	Name        string   `json:"name"`
+	Rarity      int      `json:"rarity"`
+	Description *string  `json:"description,omitempty"`
+	Image       *string  `json:"image,omitempty"`
+	Level       int      `json:"level"`
+	TimeLeft    int      `json:"time_left"`
+	Price       float64  `json:"price"`
+	BuyoutPrice *float64 `json:"buyout_price,omitempty"`
+	Quantity    int      `json:"quantity"`
+	SellerID    string   `json:"seller_id"`
+	CategoryID  string   `json:"category_id"`
 }
 
 type UpdateUserInput struct {
