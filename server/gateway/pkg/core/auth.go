@@ -89,7 +89,7 @@ func AuthenticateUser(db *sqlx.DB, email, password string) (*User, error) {
 
 	var user User
 	for res.Next() {
-		err := res.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.CreatedAt)
+		err := res.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Role, &user.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
