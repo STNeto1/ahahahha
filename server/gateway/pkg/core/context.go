@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"models"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jmoiron/sqlx"
@@ -60,8 +61,8 @@ func CookieMiddleWare() echo.MiddlewareFunc {
 	}
 }
 
-func GetUserFromContext(ctx context.Context) *User {
-	usr, ok := ctx.Value(UserCtxKey).(*User)
+func GetUserFromContext(ctx context.Context) *models.User {
+	usr, ok := ctx.Value(UserCtxKey).(*models.User)
 
 	if !ok {
 		return nil

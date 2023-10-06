@@ -25,8 +25,8 @@ type Item {
   price: Float!
   buyout_price: Float
   quantity: Int!
-  # seller: User!
-  # category: Category!
+  seller: User!
+  category: Category!
 }
 
 # Inputs

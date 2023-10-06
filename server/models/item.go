@@ -1,14 +1,6 @@
-package core
+package models
 
 import "time"
-
-type Category struct {
-	ID        string  `db:"id"`
-	Name      string  `db:"name"`
-	Slug      string  `db:"slug"`
-	CreatedAt string  `db:"created_at"`
-	ParentID  *string `db:"parent_id"`
-}
 
 type Item struct {
 	ID          string    `db:"id"`
@@ -21,8 +13,9 @@ type Item struct {
 	ToTime      time.Time `db:"to_time"`
 	Price       float64   `db:"price"`
 	BuyoutPrice float64   `db:"buyout_price"`
-	Quantity    uint32    `db:"quantity"`
-	SellerID    string    `db:"seller_id"`
-	CategoryID  string    `db:"category_id"`
+	Quantity    int       `db:"quantity"`
 	CreatedAt   string    `db:"created_at"`
+
+	CategoryID string `db:"category_id" gqlgen:"-"`
+	SellerID   string `db:"seller_id" gqlgen:"-"`
 }

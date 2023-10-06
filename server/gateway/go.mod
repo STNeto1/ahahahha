@@ -5,6 +5,7 @@ go 1.21.1
 require (
 	github.com/99designs/gqlgen v0.17.38
 	github.com/golang-jwt/jwt/v5 v5.0.0
+	github.com/graph-gophers/dataloader/v7 v7.1.0
 	github.com/huandu/go-sqlbuilder v1.22.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/labstack/echo/v4 v4.11.1

@@ -9,12 +9,37 @@ import (
 	"gateway/pkg/core"
 	"gateway/pkg/graph/model"
 	"log"
+	"models"
 	"net/http"
 	searchpb "search/gen/protos"
 	"time"
 
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
+
+// TimeLeft is the resolver for the time_left field.
+func (r *itemResolver) TimeLeft(ctx context.Context, obj *models.Item) (int, error) {
+	return int(obj.ToTime.Sub(time.Now()).Minutes()), nil
+}
+
+// Seller is the resolver for the seller field.
+func (r *itemResolver) Seller(ctx context.Context, obj *models.Item) (*models.User, error) {
+	return &models.User{
+		ID:    "some",
+		Name:  "some",
+		Email: "some",
+	}, nil
+}
+
+// Category is the resolver for the category field.
+func (r *itemResolver) Category(ctx context.Context, obj *models.Item) (*models.Category, error) {
+	return &models.Category{
+		ID:        "some",
+		Name:      "some",
+		Slug:      "some",
+		CreatedAt: time.Now().Format(time.RFC3339),
+	}, nil
+}
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUserInput) (bool, error) {
@@ -146,45 +171,50 @@ func (r *mutationResolver) DeleteItem(ctx context.Context, id string) (bool, err
 }
 
 // Users is the resolver for the users field.
-func (r *queryResolver) Users(ctx context.Context, term *string) ([]*model.User, error) {
+func (r *queryResolver) Users(ctx context.Context, term *string) ([]*models.User, error) {
 	users, err := core.SearchUsers(r.DB, term)
 	if err != nil {
 		return nil, gqlerror.Errorf(err.Error())
 	}
 
-	return core.MapUsers(users), nil
+	result := make([]*models.User, len(*users))
+	for i, user := range *users {
+		result[i] = &user
+	}
+
+	return result, nil
 }
 
 // User is the resolver for the user field.
-func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
+func (r *queryResolver) User(ctx context.Context, id string) (*models.User, error) {
 	usr, err := core.GetUser(r.DB, id)
 	if err != nil {
 		return nil, gqlerror.Errorf(err.Error())
 	}
 
-	return core.MapUser(usr), nil
+	return usr, nil
 }
 
 // Me is the resolver for the me field.
-func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
+func (r *queryResolver) Me(ctx context.Context) (*models.User, error) {
 	usr := core.GetUserFromContext(ctx)
 	if usr == nil {
 		return nil, gqlerror.Errorf("error getting user id")
 	}
 
-	return core.MapUser(usr), nil
+	return usr, nil
 }
 
 // Categories is the resolver for the categories field.
-func (r *queryResolver) Categories(ctx context.Context) ([]*model.Category, error) {
+func (r *queryResolver) Categories(ctx context.Context) ([]*models.Category, error) {
 	categories, err := r.SearchClient.FetchCategories(ctx, &searchpb.Empty{})
 	if err != nil {
 		return nil, gqlerror.Errorf(err.Error())
 	}
 
-	result := make([]*model.Category, len(categories.Categories))
+	result := make([]*models.Category, len(categories.Categories))
 	for i, category := range categories.Categories {
-		result[i] = &model.Category{
+		result[i] = &models.Category{
 			ID:   category.Id,
 			Name: category.Name,
 			Slug: category.Slug,
@@ -196,14 +226,14 @@ func (r *queryResolver) Categories(ctx context.Context) ([]*model.Category, erro
 }
 
 // Category is the resolver for the category field.
-func (r *queryResolver) Category(ctx context.Context, id string) (*model.Category, error) {
+func (r *queryResolver) Category(ctx context.Context, id string) (*models.Category, error) {
 	cat, err := r.SearchClient.GetCategory(ctx, &searchpb.GetCategoryRequest{Id: id})
 
 	if err != nil {
 		return nil, gqlerror.Errorf(err.Error())
 	}
 
-	return &model.Category{
+	return &models.Category{
 		ID:   cat.Id,
 		Name: cat.Name,
 		Slug: cat.Slug,
@@ -212,31 +242,38 @@ func (r *queryResolver) Category(ctx context.Context, id string) (*model.Categor
 }
 
 // Items is the resolver for the items field.
-func (r *queryResolver) Items(ctx context.Context) ([]*model.Item, error) {
-	return []*model.Item{}, nil
+func (r *queryResolver) Items(ctx context.Context) ([]*models.Item, error) {
+	return []*models.Item{}, nil
 }
 
 // Item is the resolver for the item field.
-func (r *queryResolver) Item(ctx context.Context, id string) (*model.Item, error) {
+func (r *queryResolver) Item(ctx context.Context, id string) (*models.Item, error) {
 	item, err := r.SearchClient.GetItem(ctx, &searchpb.GetItemRequest{Id: id})
 
 	if err != nil {
 		return nil, gqlerror.Errorf(err.Error())
 	}
 
-	return &model.Item{
-		ID:          item.GetId(),
+	return &models.Item{
+		ID:          id,
 		Name:        item.GetName(),
+		Description: item.GetDescription(),
+		Level:       core.GetPtr(int32(item.GetLevel())),
 		Rarity:      item.GetRarity().Descriptor().Index(),
-		Description: item.Description,
-		Image:       item.Image,
-		Level:       int(item.GetLevel()),
-		TimeLeft:    int(item.GetTimeLeft()),
+		Image:       nil,
+		FromTime:    time.Now(), // TODO fix
+		ToTime:      time.Now(), // TODO fix
 		Price:       float64(item.GetPrice()),
-		BuyoutPrice: nil,
-		Quantity:    10,
+		BuyoutPrice: float64(item.GetBuyoutPrice()),
+		Quantity:    int(item.GetQuantity()),
+		CreatedAt:   time.Now().Format(time.RFC3339),
+		CategoryID:  item.CategoryId,
+		SellerID:    item.SellerId,
 	}, nil
 }
+
+// Item returns ItemResolver implementation.
+func (r *Resolver) Item() ItemResolver { return &itemResolver{r} }
 
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
@@ -244,5 +281,16 @@ func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+type itemResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *itemResolver) Quantity(ctx context.Context, obj *models.Item) (int, error) {
+	return int(obj.Quantity), nil
+}

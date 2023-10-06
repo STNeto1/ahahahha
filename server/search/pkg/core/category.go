@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"log"
+	"models"
 	searchpb "search/gen/protos"
 
 	"github.com/huandu/go-sqlbuilder"
@@ -12,7 +13,7 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
-func FetchCategories(db *sqlx.DB) (*[]Category, error) {
+func FetchCategories(db *sqlx.DB) (*[]models.Category, error) {
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().From("categories").Select("*")
 
 	_sql, args := sb.Build()
@@ -22,9 +23,9 @@ func FetchCategories(db *sqlx.DB) (*[]Category, error) {
 		return nil, err
 	}
 
-	data := []Category{}
+	data := []models.Category{}
 	for rows.Next() {
-		var row Category
+		var row models.Category
 		err := rows.Scan(&row.ID, &row.Name, &row.Slug, &row.ParentID, &row.CreatedAt)
 		if err != nil {
 			return nil, err
@@ -36,7 +37,7 @@ func FetchCategories(db *sqlx.DB) (*[]Category, error) {
 	return &data, nil
 }
 
-func GetCategory(db *sqlx.DB, id string) (*Category, error) {
+func GetCategory(db *sqlx.DB, id string) (*models.Category, error) {
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().From("categories").Select("*")
 	_sql, args := sb.Where(sb.Equal("id", id)).Limit(1).Build()
 
@@ -53,7 +54,7 @@ func GetCategory(db *sqlx.DB, id string) (*Category, error) {
 		return nil, ErrCategoryDoesNotExists
 	}
 
-	var row Category
+	var row models.Category
 	if err := rows.Scan(&row.ID, &row.Name, &row.Slug, &row.ParentID, &row.CreatedAt); err != nil {
 		return nil, err
 	}
@@ -61,7 +62,7 @@ func GetCategory(db *sqlx.DB, id string) (*Category, error) {
 	return &row, nil
 }
 
-func CreateCategory(db *sqlx.DB, data *searchpb.CreateCategoryRequest) (*Category, error) {
+func CreateCategory(db *sqlx.DB, data *searchpb.CreateCategoryRequest) (*models.Category, error) {
 	tx, err := db.Begin()
 	if err != nil {
 		return nil, err
@@ -135,7 +136,7 @@ func CreateCategory(db *sqlx.DB, data *searchpb.CreateCategoryRequest) (*Categor
 		return nil, err
 	}
 
-	return &Category{
+	return &models.Category{
 		ID:       newID,
 		Name:     data.Name,
 		Slug:     data.Slug,
@@ -163,7 +164,7 @@ func UpdateCategory(db *sqlx.DB, data *searchpb.UpdateCategoryRequest) error {
 		return err
 	}
 
-	var row Category
+	var row models.Category
 	for rows.Next() {
 		err := rows.Scan(&row.ID, &row.Name, &row.Slug, &row.ParentID, &row.CreatedAt)
 		if err != nil {

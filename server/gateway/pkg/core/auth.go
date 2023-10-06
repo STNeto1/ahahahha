@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"models"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/huandu/go-sqlbuilder"
@@ -71,7 +72,7 @@ func CreateUser(db *sqlx.DB, name, email, password string) error {
 	return tx.Commit()
 }
 
-func AuthenticateUser(db *sqlx.DB, email, password string) (*User, error) {
+func AuthenticateUser(db *sqlx.DB, email, password string) (*models.User, error) {
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().From("users")
 	_sql, args := sb.Select("*").
 		Where(sb.Equal("email", email)).
@@ -87,7 +88,7 @@ func AuthenticateUser(db *sqlx.DB, email, password string) (*User, error) {
 		return nil, err
 	}
 
-	var user User
+	var user models.User
 	for res.Next() {
 		err := res.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Role, &user.CreatedAt)
 		if err != nil {
@@ -103,7 +104,7 @@ func AuthenticateUser(db *sqlx.DB, email, password string) (*User, error) {
 	return &user, nil
 }
 
-func UpdateUser(db *sqlx.DB, currentUser *User, name, email, password *string) error {
+func UpdateUser(db *sqlx.DB, currentUser *models.User, name, email, password *string) error {
 	if email == nil {
 		email = &currentUser.Email
 	}
@@ -132,7 +133,7 @@ func UpdateUser(db *sqlx.DB, currentUser *User, name, email, password *string) e
 		return err
 	}
 
-	var existingUser User
+	var existingUser models.User
 	for res.Next() {
 		err := res.Scan(&existingUser.ID, &existingUser.Name, &existingUser.Email, &existingUser.Password, &existingUser.CreatedAt)
 		if err != nil {
@@ -173,7 +174,7 @@ func UpdateUser(db *sqlx.DB, currentUser *User, name, email, password *string) e
 	return tx.Commit()
 }
 
-func DeleteUser(db *sqlx.DB, user *User) error {
+func DeleteUser(db *sqlx.DB, user *models.User) error {
 	dbb := sqlbuilder.PostgreSQL.NewDeleteBuilder().DeleteFrom("users")
 	_sql, args := dbb.
 		Where(dbb.Equal("id", user.ID)).
@@ -187,7 +188,7 @@ func DeleteUser(db *sqlx.DB, user *User) error {
 	return nil
 }
 
-func CreateToken(user *User) (string, error) {
+func CreateToken(user *models.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.ID,
 	})

@@ -1,11 +1,13 @@
 package core
 
 import (
+	"models"
+
 	"github.com/huandu/go-sqlbuilder"
 	"github.com/jmoiron/sqlx"
 )
 
-func SearchUsers(db *sqlx.DB, term *string) (*[]User, error) {
+func SearchUsers(db *sqlx.DB, term *string) (*[]models.User, error) {
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().From("users").Select("*")
 
 	if term != nil {
@@ -19,9 +21,9 @@ func SearchUsers(db *sqlx.DB, term *string) (*[]User, error) {
 		return nil, err
 	}
 
-	users := []User{}
+	users := []models.User{}
 	for rows.Next() {
-		var user User
+		var user models.User
 		err := rows.StructScan(&user)
 		if err != nil {
 			return nil, err
@@ -33,7 +35,7 @@ func SearchUsers(db *sqlx.DB, term *string) (*[]User, error) {
 	return &users, nil
 }
 
-func GetUser(db *sqlx.DB, id string) (*User, error) {
+func GetUser(db *sqlx.DB, id string) (*models.User, error) {
 	sb := sqlbuilder.PostgreSQL.NewSelectBuilder().From("users").Select("*")
 
 	_sql, args := sb.Where(sb.Equal("id", id)).Build()
@@ -43,7 +45,7 @@ func GetUser(db *sqlx.DB, id string) (*User, error) {
 		return nil, err
 	}
 
-	var user User
+	var user models.User
 	for rows.Next() {
 		err := rows.StructScan(&user)
 		if err != nil {

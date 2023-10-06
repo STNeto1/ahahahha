@@ -7,13 +7,6 @@ type AuthenticatedUserInput struct {
 	Password string `json:"password"`
 }
 
-type Category struct {
-	ID        string `json:"id"`
-	Name      string `json:"name"`
-	Slug      string `json:"slug"`
-	CreatedAt string `json:"createdAt"`
-}
-
 type CreateCategoryInput struct {
 	Name   string  `json:"name"`
 	Slug   string  `json:"slug"`
@@ -38,19 +31,6 @@ type CreateUserInput struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
-}
-
-type Item struct {
-	ID          string   `json:"id"`
-	Name        string   `json:"name"`
-	Rarity      int      `json:"rarity"`
-	Description *string  `json:"description,omitempty"`
-	Image       *string  `json:"image,omitempty"`
-	Level       int      `json:"level"`
-	TimeLeft    int      `json:"time_left"`
-	Price       float64  `json:"price"`
-	BuyoutPrice *float64 `json:"buyout_price,omitempty"`
-	Quantity    int      `json:"quantity"`
 }
 
 type UpdateCategoryInput struct {
@@ -79,10 +59,4 @@ type UpdateUserInput struct {
 	Name     *string `json:"name,omitempty"`
 	Email    *string `json:"email,omitempty"`
 	Password *string `json:"password,omitempty"`
-}
-
-type User struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
 }
